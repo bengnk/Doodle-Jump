@@ -1,0 +1,14 @@
+# ninja log v5
+11	447	7628201932977280	CMakeFiles/Doodle-Jump.dir/Platform.cpp.obj	fae036224df647cb
+14	518	7628194815246567	CMakeFiles/Doodle-Jump.dir/Player.cpp.obj	efddb55019a5e89
+4	705	7628214240453625	CMakeFiles/Doodle-Jump.dir/Game.cpp.obj	634182f6ae32ec8b
+3	470	7628207135339469	CMakeFiles/Doodle-Jump.dir/main.cpp.obj	dd159d55c106468c
+705	824	7628214241624616	Doodle-Jump.exe	4d0acbd15413c4ff
+15	531	7628216076821654	CMakeFiles/Doodle-Jump.dir/Player.cpp.obj	efddb55019a5e89
+11	539	7628216076906743	CMakeFiles/Doodle-Jump.dir/Enemy.cpp.obj	6c2d7e72a8b780ed
+8	580	7628216077306775	CMakeFiles/Doodle-Jump.dir/main.cpp.obj	dd159d55c106468c
+8	529	7628216938823480	CMakeFiles/Doodle-Jump.dir/main.cpp.obj	dd159d55c106468c
+4	742	7628216940941993	CMakeFiles/Doodle-Jump.dir/Game.cpp.obj	634182f6ae32ec8b
+742	882	7628216942316749	Doodle-Jump.exe	1a2301a90d3a7aac
+5	753	7628218592536932	CMakeFiles/Doodle-Jump.dir/Game.cpp.obj	634182f6ae32ec8b
+753	893	7628218593898279	Doodle-Jump.exe	1a2301a90d3a7aac
