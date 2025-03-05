@@ -5,12 +5,13 @@
 #include <vector>
 #include "Player.hpp"
 #include "Platform.hpp"
-#include "Enemy.hpp"  // Hinzugefügt, um die Enemy-Klasse zu kennen
+#include "Enemy.hpp"
 
 class Game {
 public:
     Game();
     void run();
+    void reset();
 
 private:
     void init();
@@ -21,10 +22,13 @@ private:
     sf::RenderWindow window;
     Player player;
     std::vector<Platform> platforms;
-    std::vector<Enemy> enemies;  // Neu: Vektor für Gegner
+    std::vector<Enemy> enemies;
     sf::View view;
     sf::View hudView;
     int score;
+    int highScore;
+    bool gameOver;
+    bool paused;    // Neu: Variable zum Pausieren des Spiels
     sf::Font font;
     sf::Text scoreText;
 };
