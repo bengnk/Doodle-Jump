@@ -12,7 +12,9 @@ public:
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
     void jump();
-    void setPosition(const sf::Vector2f& pos); // Für Wrap-Around
+    void boost(); // Neuer Boost: verleiht einen stärkeren Sprung
+    void setPosition(const sf::Vector2f& pos);
+
 private:
     sf::RectangleShape shape;
     sf::Vector2f velocity;

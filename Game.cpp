@@ -1,112 +1,91 @@
 #include "Game.hpp"
 #include "Enemy.hpp"
+#include "Boost.hpp"   // Neu: Boost einbinden
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
 
-// Konstruktor: Initialisiert das Fenster, den Spieler, Score, Highscore sowie Zustände für Game Over und Pause.
-// Lädt zudem die Schriftart und ruft init() auf, um den Spielzustand zu initialisieren.
+// Konstruktor: Initialisiert Fenster, Spieler, Score, Highscore, Zustände und lädt Schriftart.
 Game::Game()
         : window(sf::VideoMode(400, 600), "Doodle Jump Clone"),
-          player(sf::Vector2f(200, 500)),   // Setze die Startposition des Spielers
+          player(sf::Vector2f(200, 500)),
           score(0),
           highScore(0),
           gameOver(false),
           paused(false)
 {
-    // Setze die Bildwiederholrate (Framerate) auf 60 FPS
     window.setFramerateLimit(60);
-
-    // Versuche, die Schriftart "arial.ttf" zu laden.
-    // Stelle sicher, dass die Datei im Arbeitsverzeichnis liegt.
+    // Schriftart laden – stelle sicher, dass "arial.ttf" im Arbeitsverzeichnis liegt.
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Fehler beim Laden der Schriftart!" << std::endl;
     }
-
-    // Konfiguriere den Score-Text: Schrift, Größe, Farbe und Position im Fenster.
     scoreText.setFont(font);
     scoreText.setCharacterSize(20);
     scoreText.setFillColor(sf::Color::White);
     scoreText.setPosition(10, 10);
-
-    // Initialisiere den Spielzustand (Plattformen, Kamera, etc.)
     init();
 }
 
-// init() setzt den Spielzustand zurück und erstellt anfängliche Plattformen (ohne Gegner-Spawns am Start).
+// init() setzt den Spielzustand zurück: löscht alte Plattformen, Gegner und Boosts,
+// erzeugt neue Plattformen und setzt die Kameras und Spielerposition zurück.
 void Game::init() {
-    // Lösche alle vorhandenen Plattformen und Gegner (wichtig beim Reset)
     platforms.clear();
     enemies.clear();
-
-    // Erstelle eine Basisplattform an einer festen Position.
+    boosts.clear(); // Alle vorhandenen Boosts entfernen
     platforms.push_back(Platform(sf::Vector2f(150, 550)));
-
-    // Initialisiere den Zufallsgenerator mit der aktuellen Zeit.
     srand(static_cast<unsigned>(time(0)));
-
-    // Erzeuge 10 weitere Plattformen, die sich in der Höhe unterscheiden.
-    // Die Plattformen werden in zufälligen Abständen (50 bis 99 Pixel) nach oben versetzt.
     float yPos = 500;
     for (int i = 0; i < 10; ++i) {
         yPos -= 50 + (rand() % 50);
-        float x = rand() % (window.getSize().x - 100); // Plattformbreite ist 100 Pixel
+        float x = rand() % (window.getSize().x - 100);
         platforms.push_back(Platform(sf::Vector2f(x, yPos)));
     }
+    // Kein initialer Gegner oder Boost, um direkte Kollisionen beim Start zu vermeiden.
 
-    // Es wird bewusst kein initialer Gegner erzeugt, um direkte Kollisionen beim Spielstart zu vermeiden.
-
-    // Setze die Kameraperspektiven (Game-View und HUD-View) auf die Standardansicht des Fensters.
     view = window.getDefaultView();
     hudView = window.getDefaultView();
-
-    // Setze die Startposition des Spielers und initialisiere Score sowie Zustände.
     player.setPosition(sf::Vector2f(200, 500));
     score = 0;
     gameOver = false;
     paused = false;
 }
 
-// reset() wird beim Neustart des Spiels (z. B. nach Game Over) aufgerufen.
-// Aktualisiert den Highscore, falls der aktuelle Score höher ist, und initialisiert den Spielzustand neu.
+// reset() aktualisiert den Highscore (falls nötig) und setzt das Spiel zurück.
 void Game::reset() {
     if (score > highScore)
         highScore = score;
     init();
 }
 
-// run() enthält die Hauptspielschleife, die fortlaufend Eingaben verarbeitet, den Zustand aktualisiert und zeichnet.
+// run() enthält die Hauptspielschleife: verarbeitet Eingaben, aktualisiert und zeichnet den Spielzustand.
 void Game::run() {
-    sf::Clock clock; // Clock zur Messung der verstrichenen Zeit pro Frame (deltaTime)
+    sf::Clock clock;
     while (window.isOpen()) {
-        // deltaTime: Zeit, die seit dem letzten Frame vergangen ist.
         sf::Time deltaTime = clock.restart();
-        processEvents();         // Verarbeite Eingaben (z. B. Tastatur, Mausklicks, Fenster schließen)
+        processEvents();
         if (!gameOver && !paused) {
-            update(deltaTime);   // Aktualisiere den Spielzustand nur, wenn nicht Game Over und nicht pausiert
+            update(deltaTime);
         }
-        render();                // Zeichne den aktuellen Zustand
+        render();
     }
 }
 
-// processEvents() verarbeitet alle Fensterereignisse, wie das Schließen des Fensters,
-// das Pausieren (über ESC) und das Neustarten (über R) im Game Over-Zustand.
+// processEvents() verarbeitet Fensterereignisse, schaltet bei ESC den Pausenstatus um,
+// und bei Game Over kann mit R ein Reset erfolgen.
 void Game::processEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
-        // Fenster schließen
         if (event.type == sf::Event::Closed)
             window.close();
-
-        // Wenn das Spiel aktiv ist (nicht Game Over), schalte den Pausenstatus mit ESC um.
         if (!gameOver && event.type == sf::Event::KeyPressed) {
+            // ESC-Taste zum Pausieren oder Fortsetzen
             if (event.key.code == sf::Keyboard::Escape) {
                 paused = !paused;
             }
         }
-        // Wenn das Spiel im Game Over-Zustand ist, kann mit R ein Reset erfolgen.
         if (gameOver && event.type == sf::Event::KeyPressed) {
+            // Bei Game Over: Taste R zum Neustarten
             if (event.key.code == sf::Keyboard::R) {
                 reset();
             }
@@ -114,46 +93,56 @@ void Game::processEvents() {
     }
 }
 
-// update() aktualisiert den gesamten Spielzustand:
-// Spieler, Plattformen, Gegner, Kollisionen, Kamera, dynamische Generierung neuer Objekte
+// update() aktualisiert Spieler, Plattformen, Gegner und Boosts sowie Kollisionsprüfungen
+// und die dynamische Generierung von Plattformen, Gegnern und Boosts.
 void Game::update(sf::Time deltaTime) {
-    // Aktualisiere den Spieler (Bewegung, Eingabe, Physik)
+    // Update des Spielers
     player.update(deltaTime);
 
-    // Aktualisiere alle Plattformen (zum Beispiel bewegliche Plattformen)
+    // Update aller Plattformen (z. B. bewegliche Plattformen)
     for (auto& platform : platforms) {
         platform.update(deltaTime, window.getSize().x);
     }
 
-    // Aktualisiere alle Gegner
+    // Update aller Gegner
     for (auto& enemy : enemies) {
         enemy.update(deltaTime, window.getSize().x);
+    }
+
+    // Update aller Boosts (aktuell statisch, aber update()-Aufruf falls benötigt)
+    for (auto& boost : boosts) {
+        boost.update(deltaTime, window.getSize().x);
     }
 
     // Kollisionsprüfung zwischen Spieler und Plattformen anhand der unteren Spieler-Kante:
     sf::FloatRect playerBounds = player.getGlobalBounds();
     float playerBottom = playerBounds.top + playerBounds.height;
-    // Überprüfe jede Plattform
     for (size_t i = 0; i < platforms.size(); i++) {
         sf::FloatRect platBounds = platforms[i].getGlobalBounds();
-        // Nur prüfen, wenn der Spieler nach unten fällt (positive y-Geschwindigkeit) und die Bounding-Boxen sich überschneiden.
         if (player.getVelocity().y > 0 && playerBounds.intersects(platBounds)) {
-            // Prüfe, ob der Abstand zwischen der unteren Spielerkante und der oberen Plattformkante kleiner als 15 Pixel ist.
             if ((playerBottom - platBounds.top) >= 0 && (playerBottom - platBounds.top) < 15) {
-                // Löst den Sprung des Spielers aus.
                 player.jump();
-                // Wenn es sich um eine "verschwindende" Plattform handelt, entferne sie.
                 if (platforms[i].isDisappearing()) {
                     platforms.erase(platforms.begin() + i);
-                    i--; // Passe den Index an, da ein Element gelöscht wurde.
+                    i--;
                 }
-                break; // Verarbeite nur eine Kollision pro Frame.
+                break;
             }
         }
     }
 
-    // Horizontales Wrap-Around:
-    // Falls der Spieler den linken Bildschirmrand verlässt, erscheint er rechts und umgekehrt.
+    // Kollisionsprüfung zwischen Spieler und Boosts:
+    // Wird ein Boost eingesammelt, erhält der Spieler einen stärkeren Sprung (Boost) und der Boost wird entfernt.
+    for (size_t i = 0; i < boosts.size(); i++) {
+        if (playerBounds.intersects(boosts[i].getGlobalBounds())) {
+            player.boost();
+            boosts.erase(boosts.begin() + i);
+            i--;
+            break;
+        }
+    }
+
+    // Horizontales Wrap-Around für den Spieler:
     sf::Vector2f pos = player.getPosition();
     if (pos.x < 0) {
         pos.x = window.getSize().x;
@@ -163,8 +152,7 @@ void Game::update(sf::Time deltaTime) {
         player.setPosition(pos);
     }
 
-    // Kollisionsprüfung mit Gegnern:
-    // Bei Berührung eines Gegners wird das Spiel beendet (Game Over).
+    // Kollisionsprüfung mit Gegnern – bei Berührung eines Gegners Game Over.
     for (auto& enemy : enemies) {
         if (playerBounds.intersects(enemy.getGlobalBounds())) {
             std::cout << "Game Over! Du hast einen Gegner berührt. Dein Score: " << score << std::endl;
@@ -172,26 +160,20 @@ void Game::update(sf::Time deltaTime) {
         }
     }
 
-    // Kamera-Update:
-    // Wenn der Spieler höher springt als die aktuelle Kamerazentrierung, wird die Kamera nach oben verschoben.
+    // Kamera-Update: Wenn der Spieler höher springt als das aktuelle Kamerazentrum, wird die Kamera nach oben verschoben.
     if (player.getPosition().y < view.getCenter().y) {
         view.setCenter(view.getCenter().x, player.getPosition().y);
         window.setView(view);
-        // Aktualisiere den Score basierend auf der maximal erreichten Höhe.
         score = std::max(score, static_cast<int>(600 - player.getPosition().y));
     }
 
     // Dynamische Plattformgenerierung:
-    // Berechne den oberen Rand der aktuellen Ansicht.
     float topOfView = view.getCenter().y - window.getSize().y / 2;
-    // Finde die höchste (oberste) Plattform.
     float highestY = 1e9f;
     for (const auto& platform : platforms) {
         if (platform.getGlobalBounds().top < highestY)
             highestY = platform.getGlobalBounds().top;
     }
-    // Solange der Abstand zwischen der obersten Plattform und dem oberen Rand der Ansicht größer als 120 Pixel ist,
-    // werden neue Plattformen mit einem zufälligen vertikalen Abstand (zwischen 80 und 120 Pixel) generiert.
     while (highestY - topOfView > 120) {
         int offset = 80 + (rand() % 41);
         float newY = highestY - offset;
@@ -200,10 +182,7 @@ void Game::update(sf::Time deltaTime) {
         highestY = newY;
     }
 
-    // Dynamische Gegner-Generierung:
-    // Ab einem Score von über 100 werden mit einer Wahrscheinlichkeit von 0,5% pro Frame Gegner generiert.
-    // Es wird zusätzlich geprüft, dass der Gegner mindestens 150 Pixel über der Spielerposition spawnt,
-    // um direkte Kollisionen zu vermeiden.
+    // Dynamische Gegner-Generierung: erst ab Score > 100 und mit 0,5% Wahrscheinlichkeit pro Frame
     if (score > 100) {
         if (rand() % 1000 < 5) {
             float enemyX = rand() % (window.getSize().x - 40);
@@ -214,7 +193,19 @@ void Game::update(sf::Time deltaTime) {
         }
     }
 
-    // Entferne Plattformen, die weit unterhalb der aktuellen Ansicht liegen (außerhalb des Bildschirms).
+    // Dynamische Boost-Generierung: Ab einem Score von 50 erscheint mit geringer Wahrscheinlichkeit ein Boost.
+    if (score > 50) {
+        if (rand() % 1000 < 3) {  // ca. 0,3% Wahrscheinlichkeit pro Frame
+            float boostX = rand() % (window.getSize().x - 20);
+            float boostY = topOfView - (rand() % 100 + 50);
+            // Stelle sicher, dass der Boost mindestens 100 Pixel über dem Spieler spawnt.
+            if (boostY < player.getPosition().y - 100) {
+                boosts.push_back(Boost(sf::Vector2f(boostX, boostY)));
+            }
+        }
+    }
+
+    // Entferne Plattformen, die weit unterhalb des Sichtbereichs liegen.
     platforms.erase(
             std::remove_if(platforms.begin(), platforms.end(), [this](const Platform& p) {
                 return p.getGlobalBounds().top > view.getCenter().y + window.getSize().y;
@@ -222,7 +213,7 @@ void Game::update(sf::Time deltaTime) {
             platforms.end()
     );
 
-    // Entferne Gegner, die weit unterhalb der aktuellen Ansicht liegen.
+    // Entferne Gegner, die weit unterhalb des Sichtbereichs liegen.
     enemies.erase(
             std::remove_if(enemies.begin(), enemies.end(), [this](const Enemy& e) {
                 return e.getGlobalBounds().top > view.getCenter().y + window.getSize().y;
@@ -230,24 +221,30 @@ void Game::update(sf::Time deltaTime) {
             enemies.end()
     );
 
-    // Game Over-Bedingung:
-    // Wenn der Spieler zu weit unterhalb des Sichtbereichs fällt, wird das Spiel beendet.
+    // Entferne Boosts, die weit unterhalb des Sichtbereichs liegen.
+    boosts.erase(
+            std::remove_if(boosts.begin(), boosts.end(), [this](const Boost& b) {
+                return b.getGlobalBounds().top > view.getCenter().y + window.getSize().y;
+            }),
+            boosts.end()
+    );
+
+    // Game Over-Bedingung: Fällt der Spieler zu weit unterhalb des Sichtbereichs, wird das Spiel beendet.
     if (player.getPosition().y > view.getCenter().y + 400 || player.getPosition().y > window.getSize().y) {
         std::cout << "Game Over! Dein Score: " << score << std::endl;
         gameOver = true;
     }
 
-    // Aktualisiere den Score-Text, der den aktuellen Score und Highscore anzeigt.
+    // Aktualisiere den Score-Text (zeigt aktuellen Score und Highscore).
     scoreText.setString("Score: " + std::to_string(score) + "\nHighscore: " + std::to_string(highScore));
 }
 
-// render() zeichnet den aktuellen Spielzustand.
-// Zuerst werden alle Spielobjekte in der Game-View gezeichnet, danach die HUD-Elemente in der fixierten HUD-View.
+// render() zeichnet zuerst alle Spielobjekte (Plattformen, Gegner, Boosts, Spieler) in der scrollenden Game-View
+// und danach die HUD-Elemente (Score, Pausen- oder Game Over-Anzeige) in der fixierten HUD-View.
 void Game::render() {
-    // Leere den Fensterinhalt (mit schwarzem Hintergrund).
     window.clear(sf::Color::Black);
 
-    // Setze die Game-View (Kamera), um die Spielobjekte (Plattformen, Gegner, Spieler) zu zeichnen.
+    // Zeichne die Game-View (mit allen aktiven Objekten)
     window.setView(view);
     for (auto& platform : platforms) {
         platform.draw(window);
@@ -255,19 +252,22 @@ void Game::render() {
     for (auto& enemy : enemies) {
         enemy.draw(window);
     }
+    for (auto& boost : boosts) {
+        boost.draw(window);
+    }
     player.draw(window);
 
-    // Setze die HUD-View, damit die HUD-Elemente (Score, Pausen- oder Game Over-Anzeige) fixiert am Bildschirm bleiben.
+    // Setze die HUD-View, damit HUD-Elemente (Score, Pausen-/Game Over-Anzeige) fixiert bleiben.
     window.setView(hudView);
-    // Wenn das Spiel aktiv ist (nicht Game Over und nicht pausiert), wird der Score-Text gezeichnet.
+    // Im normalen Spiel werden nur Score-Text angezeigt.
     if (!gameOver && !paused) {
         window.draw(scoreText);
     }
-    // Wenn das Spiel pausiert ist (aber nicht Game Over), wird eine Pausenanzeige mit halbtransparentem Hintergrund angezeigt.
+    // Falls pausiert, zeige eine Pausenanzeige.
     if (paused && !gameOver) {
         sf::RectangleShape pauseBg;
         pauseBg.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
-        pauseBg.setFillColor(sf::Color(0, 0, 0, 150)); // Halbtransparenter schwarzer Hintergrund
+        pauseBg.setFillColor(sf::Color(0, 0, 0, 150));
         pauseBg.setPosition(0, 0);
         window.draw(pauseBg);
 
@@ -282,11 +282,11 @@ void Game::render() {
         pauseText.setPosition(hudView.getCenter());
         window.draw(pauseText);
     }
-    // Wenn das Spiel Game Over ist, wird eine vollständige Überlagerung mit Game Over-Text angezeigt.
+    // Falls Game Over, wird eine Überlagerung mit Game Over-Text angezeigt.
     if (gameOver) {
         sf::RectangleShape gameOverBg;
         gameOverBg.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
-        gameOverBg.setFillColor(sf::Color(0, 0, 0, 200)); // Dunkler, halbtransparenter Hintergrund
+        gameOverBg.setFillColor(sf::Color(0, 0, 0, 200));
         gameOverBg.setPosition(0, 0);
         window.draw(gameOverBg);
 
@@ -304,6 +304,5 @@ void Game::render() {
         window.draw(gameOverText);
     }
 
-    // Zeige den gerenderten Frame an.
     window.display();
 }
