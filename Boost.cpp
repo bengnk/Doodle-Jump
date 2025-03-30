@@ -1,24 +1,28 @@
 #include "Boost.hpp"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
-// Konstruktor: Erstellt einen Boost als Kreis mit Radius 10 und einer leuchtenden Cyan-Farbe.
 Boost::Boost(const sf::Vector2f& startPos) {
-    shape.setRadius(10.f);
-    shape.setFillColor(sf::Color(0, 255, 255)); // Leuchtendes Cyan
-    shape.setPosition(startPos);
+    if (!texture.loadFromFile("boost.png")) {
+        std::cerr << "Fehler beim Laden von boost.png" << std::endl;
+    }
+    sprite.setTexture(texture);
+    sf::FloatRect bounds = sprite.getLocalBounds();
+    sprite.setOrigin(bounds.width / 2, bounds.height / 2);
+    sprite.setPosition(startPos);
+
+    // Testweise: Temporärer größerer Skalierungsfaktor, z. B. 0.1f
+    sprite.setScale(0.01f, 0.01f);
 }
 
-// update(): Aktuell keine Bewegung – Funktion bleibt statisch, kann aber erweitert werden.
 void Boost::update(sf::Time deltaTime, unsigned windowWidth) {
-    // Für zukünftige Erweiterungen: Bewegung oder Animation des Boosts.
+    // Der Boost bewegt sich aktuell nicht.
 }
 
-// draw(): Zeichnet den Boost auf das gegebene Fenster.
 void Boost::draw(sf::RenderWindow& window) {
-    window.draw(shape);
+    window.draw(sprite);
 }
 
-// getGlobalBounds(): Liefert den Begrenzungsrahmen des Boosts für Kollisionsprüfungen.
 sf::FloatRect Boost::getGlobalBounds() const {
-    return shape.getGlobalBounds();
+    return sprite.getGlobalBounds();
 }

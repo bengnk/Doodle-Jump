@@ -9,6 +9,8 @@ class Platform {
 public:
     // Konstruktor: Setzt Startposition und bestimmt zufällig den Plattformtyp
     Platform(const sf::Vector2f& startPos);
+    // Gibt zurück, ob die Plattform sich bewegt (true bei beweglichen Plattformen)
+    bool isMoving() const;
 
     // Zeichnet die Plattform
     void draw(sf::RenderWindow& window);

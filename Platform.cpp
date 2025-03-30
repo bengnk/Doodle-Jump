@@ -18,6 +18,9 @@ Platform::Platform(const sf::Vector2f& startPos) {
     }
     shape.setPosition(startPos);
 }
+bool Platform::isMoving() const {
+    return type == PlatformType::Moving;
+}
 
 void Platform::draw(sf::RenderWindow& window) {
     window.draw(shape);

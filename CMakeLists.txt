@@ -4,7 +4,7 @@ project(Doodle-Jump)
 set(CMAKE_CXX_STANDARD 17)
 
 # Setze den Pfad zu SFMLConfig.cmake
-set(SFML_DIR "C:/Users/Administrator/Doodle-Jump/SFML-2.5.1/lib/cmake/SFML")
+set(SFML_DIR "C:/Users/Ben Gnielka/Doodle-Jump/SFML-2.5.1/lib/cmake/SFML")
 
 # Finde das SFML-Paket (SFML 2.5.1)
 find_package(SFML 2.5 REQUIRED graphics audio network)

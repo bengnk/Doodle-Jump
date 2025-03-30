@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Administrator/Doodle-Jump/cmake-build-debug"
+			"value" : "c:/Users/Ben Gnielka/Doodle-Jump/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -575,7 +575,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Administrator/Doodle-Jump/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/Ben Gnielka/Doodle-Jump/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -647,7 +647,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Administrator/Doodle-Jump"
+			"value" : "C:/Users/Ben Gnielka/Doodle-Jump"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1263,7 +1263,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Administrator/Doodle-Jump/cmake-build-debug"
+			"value" : "C:/Users/Ben Gnielka/Doodle-Jump/cmake-build-debug"
 		},
 		{
 			"name" : "Doodle-Jump_IS_TOP_LEVEL",
@@ -1287,7 +1287,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Administrator/Doodle-Jump"
+			"value" : "C:/Users/Ben Gnielka/Doodle-Jump"
 		},
 		{
 			"name" : "SFML_DOC_DIR",
