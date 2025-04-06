@@ -1,0 +1,5 @@
+"C:\Program Files\JetBrains\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2023.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S "C:\Users\Ben Gnielka\Doodle-Jump\src" -B "C:\Users\Ben Gnielka\Doodle-Jump\src\cmake-build-default"
+-- Found SFML 2.5.1 in C:/Users/Ben Gnielka/Doodle-Jump/SFML-2.5.1/lib/cmake/SFML
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/Ben Gnielka/Doodle-Jump/src/cmake-build-default

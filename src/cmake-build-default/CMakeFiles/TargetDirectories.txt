@@ -1,0 +1,3 @@
+C:/Users/Ben Gnielka/Doodle-Jump/src/cmake-build-default/CMakeFiles/Doodle-Jump.dir
+C:/Users/Ben Gnielka/Doodle-Jump/src/cmake-build-default/CMakeFiles/edit_cache.dir
+C:/Users/Ben Gnielka/Doodle-Jump/src/cmake-build-default/CMakeFiles/rebuild_cache.dir

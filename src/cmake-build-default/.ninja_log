@@ -1,0 +1,8 @@
+# ninja log v5
+9	512	7656373537726134	CMakeFiles/Doodle-Jump.dir/Platform.cpp.obj	451c4d8512acd263
+13	516	7656373537736134	CMakeFiles/Doodle-Jump.dir/Enemy.cpp.obj	bd9c52112b294a6
+6	525	7656373537852913	CMakeFiles/Doodle-Jump.dir/Boost.cpp.obj	b1ed6692c33b98a5
+17	526	7656373537862904	CMakeFiles/Doodle-Jump.dir/Player.cpp.obj	a624cd6e5fc93a3b
+0	545	7656373538063583	CMakeFiles/Doodle-Jump.dir/main.cpp.obj	2d4a9e816ca6ac61
+3	803	7656373540637292	CMakeFiles/Doodle-Jump.dir/Game.cpp.obj	69af73082b4b0806
+803	915	7656373541728588	Doodle-Jump.exe	ff3acab5a16b1580
